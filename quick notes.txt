@@ -1,5 +1,0 @@
-Package hoopR
-
-Saiem Gilani. hoopR: Access Men’s Basketball Play by Play Data. Retrieved from https://doi.org/10.32614/CRAN.package.hoopR
-
-install.packages("hoopR")
