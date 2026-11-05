@@ -1,0 +1,73 @@
+---
+title: "Mybook"
+author: "Christos Stekas"
+editor: visual
+format: 
+  html:
+   toc: true
+   toc-depth: 3
+   number-sections: true
+---
+
+# Chapter 1: Evolution of the game
+
+## 1.1 Shot attempts
+
+A very simple first check is to investigate how the number of shot attempts changed over the years. Here we investigate the number of total Field Goals Attempted (FGA), 2-point FGA and 3-point FGA:
+
+```{r}
+#| message: false
+#| warning: false
+#| fig-dpi: 500
+#| fig-height: 6
+#| fig-width: 12
+#| label: fig-FGA_attempts
+#| fig.cap: 'NBA field-goal attempts per season by shot type, 2000–2025. Lines show the league-wide number of two-point (green), three-point (orange) and total (blue) field-goal attempts in each regular season.'
+
+
+library(tidyverse)
+
+# Load data ----
+raw_data <- read_tsv("data/all_shots_seasons_2000_to_2025.tsv")
+
+
+# Summarize shot attempts ----
+attempts_by_type <- raw_data %>%
+  group_by(Season) %>%
+  count(SHOT_TYPE)
+
+# Get total attempts
+totals_attempts <- raw_data %>%
+  group_by(Season) %>%
+  count() %>%
+  ungroup() %>%
+  mutate(SHOT_TYPE = "Total Field Goals")
+
+summary_df <- bind_rows(attempts_by_type, totals_attempts)
+
+
+# Plot -----
+ggplot(summary_df, aes(x = Season, y = n, colour = SHOT_TYPE)) +
+  geom_line(linewidth = 1.5) +
+  scale_color_brewer(palette = "Set2") +
+  labs(title = "Shot attempts per NBA season",
+       y = "Attempts",
+       color = "Shot type"
+       ) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+```
+
+We can see from @fig-FGA_attempts that 2-point FGA have decreased over time from about 159,000 in 2000 to about 128,000 in 2025, while 3-point FGA have steadily increased from about 33,000 to about 90,000 over the same period. The total attempts have fluctuated, showing however an slight increasing trend. Of note, the sharp dips in 2011 and in 2019 and 2020 reflect shortened seasons (the 2011 lockout and the COVID-19 pandemic), not changes in how teams chose their shots. Overall, we see that the growth in three-point shooting mostly replaced two-point shots rather than adding to the overall volume of shots.
+
+# Chapter 2: Data Analysis
+
+Some text about data analysis.
+
+## 2.1 Importing data
+
+Explanation here.
+
+# Chapter 3: Visualization
+
+Some text about visualization.
