@@ -11,7 +11,9 @@ format:
 
 # Chapter 1: Evolution of the game
 
-## 1.1 Shot attempts
+Explain thje main questions and rationale.........
+
+## Shot attempts
 
 A very simple first check is to investigate how the number of shot attempts changed over the years. Here we investigate the number of total Field Goals Attempted (FGA), 2-point FGA and 3-point FGA:
 
@@ -26,6 +28,7 @@ A very simple first check is to investigate how the number of shot attempts chan
 
 
 library(tidyverse)
+
 
 # Load data ----
 raw_data <- read_tsv("data/all_shots_seasons_2000_to_2025.tsv")
@@ -59,6 +62,68 @@ ggplot(summary_df, aes(x = Season, y = n, colour = SHOT_TYPE)) +
 ```
 
 We can see from @fig-FGA_attempts that 2-point FGA have decreased over time from about 159,000 in 2000 to about 128,000 in 2025, while 3-point FGA have steadily increased from about 33,000 to about 90,000 over the same period. The total attempts have fluctuated, showing however an slight increasing trend. Of note, the sharp dips in 2011 and in 2019 and 2020 reflect shortened seasons (the 2011 lockout and the COVID-19 pandemic), not changes in how teams chose their shots. Overall, we see that the growth in three-point shooting mostly replaced two-point shots rather than adding to the overall volume of shots.
+
+
+
+## Successful shots
+
+Now it would be interesting to see if the changes in shot selection are accompanied by respective changes in shots made. In other words, are player more or less accurate with their shot selection over the years?
+
+```{r}
+#| message: false
+#| warning: false
+#| fig-dpi: 500
+#| fig-height: 6
+#| fig-width: 12
+#| label: fig-FGA_percent
+#| fig.cap: 'NBA percentage of successfull field-goal makes per season by shot type, 2000–2025. Lines show the league-wide percentages of successful two-point (green) and three-point (orange) field-goal attempts in each regular season.'
+
+
+library(tidyverse)
+
+
+# Load data --------------------------
+raw_data <- read_tsv("data/all_shots_seasons_2000_to_2025.tsv")
+
+
+#Prepare data -------------------------------
+# Summarize shot attempts, and how many were successful or not
+attempts_by_type <- raw_data %>%
+  group_by(Season, SHOT_TYPE) %>%
+  count(EVENT_TYPE)
+
+# Get percentage of successful shots (per type)
+percentages_success <- attempts_by_type %>%
+  group_by(Season, SHOT_TYPE) %>%
+  summarise(
+    percentage = n[EVENT_TYPE == "Made Shot"] / sum(n) * 100,
+    .groups = "drop"
+  )
+
+
+# Plot -------------------
+#Add reference lines
+ref_lines <- percentages_success %>%
+  group_by(SHOT_TYPE) %>%
+  summarise(ref = percentage[Season == min(Season)])   
+
+ggplot(percentages_success, aes(x = Season, y = percentage, colour = SHOT_TYPE)) +
+  geom_line(linewidth = 1.2) +
+  scale_color_brewer(palette = "Set2") +
+  labs(title = "Percentage of successful shot attempts per NBA season",
+       y = "% of made shots",
+       color = "Shot type"
+  ) +
+  geom_hline(data = ref_lines, aes(yintercept = ref, colour = SHOT_TYPE), linetype = 2) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
+
+```
+
+Interestingly, we notice a steady increase in the percentage of successful 2-point FG, going from 46% in 2000 to 55% in 2025. On the other hand, we see that the percentage of successful 3-point FG barely changed, ranging from 34.7% to 36.7% throughout all these years.
+
+
+
 
 # Chapter 2: Data Analysis
 
