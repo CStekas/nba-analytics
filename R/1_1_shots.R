@@ -8,11 +8,14 @@
 library(tidyverse)
 
 
-# Load data ----
+# Load data -------------------
 raw_data <- read_tsv("data/all_shots_seasons_2000_to_2025.tsv")
 
 
-# Summarize shot attempts ----
+
+# Prepare data ---------------------
+
+# Summarize shot attempts 
 attempts_by_type <- raw_data %>%
   group_by(Season) %>%
   count(SHOT_TYPE)
@@ -27,7 +30,8 @@ totals_attempts <- raw_data %>%
 summary_df <- bind_rows(attempts_by_type, totals_attempts)
 
 
-# Plot -----
+
+# Plot ---------------------
 ggplot(summary_df, aes(x = Season, y = n, colour = SHOT_TYPE)) +
   geom_line(linewidth = 1.5) +
   scale_color_brewer(palette = "Set2") +
